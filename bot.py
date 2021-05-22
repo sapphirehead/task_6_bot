@@ -4,21 +4,23 @@ import telebot
 from dotenv import load_dotenv
 import psycopg2
 import psycopg2.sql as sql
-#from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-
+from psycopg2 import Error
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 load_dotenv()
 token = os.getenv('TOKEN')
 password = os.getenv('PASSWORD')
 
-# conn = psycopg2.connect(user='postgres', password=password,
-#                         host='127.0.0.1', port=5432)
-#
-# conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-# # Курсор для выполнения операций с базой данных
-# cursor = conn.cursor()
-# sql_create_database = 'CREATE DATABASE postgres_db'
-# cursor.execute(sql_create_database)
+try:
+    conn = psycopg2.connect(user='postgres', password=password,
+                            host='127.0.0.1', port=5432)
+    conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+    # Курсор для выполнения операций с базой данных
+    cursor = conn.cursor()
+    sql_create_database = 'CREATE DATABASE postgres_db'
+    cursor.execute(sql_create_database)
+except (Exception, Error):
+    pass
 
 conn = psycopg2.connect(user="postgres",
                         # пароль, который указали при установке PostgreSQL
@@ -27,12 +29,13 @@ conn = psycopg2.connect(user="postgres",
                         port="5432",
                         database="postgres_db")
 
-
-# with conn:
-#     with conn.cursor() as cur:
-#         cur.execute("CREATE TABLE locations (id SERIAL PRIMARY KEY, " +
-#                     "user_id VARCHAR(64), location VARCHAR(64))")
-
+try:
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute("CREATE TABLE locations (id SERIAL PRIMARY KEY, " +
+                        "user_id VARCHAR(64), location VARCHAR(64))")
+except (Exception, Error):
+    pass
 
 bot = telebot.TeleBot(token)
 START, ADD_NAME, ADD_LOCATION = range(3)
@@ -65,8 +68,9 @@ def write_coords_to_redis(user_id, location):
                         .format(sql.Literal(user_id)))
             title = cur.fetchone()[0]
             full_location_data = f'{title}&#59;{lat}&#59;{lon}'
-            cur.execute(sql.SQL("UPDATE locations SET user_id = %s, location = %s WHERE location = %s AND user_id = %s"),
-                        (user_id, full_location_data, title, user_id))
+            cur.execute(
+                sql.SQL("UPDATE locations SET user_id = %s, location = %s WHERE location = %s AND user_id = %s"),
+                (user_id, full_location_data, title, user_id))
 
 
 @bot.message_handler(
