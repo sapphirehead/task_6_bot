@@ -8,7 +8,6 @@ pytelegrambotapi = "*"
 redis = "*"
 python-dotenv = "*"
 psycopg2 = "*"
-gunicorn = "*"
 
 [dev-packages]
 
