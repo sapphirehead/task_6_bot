@@ -1,3 +1,4 @@
+# Bot on sqlite3
 import os
 from collections import defaultdict
 import telebot
@@ -5,7 +6,8 @@ from dotenv import load_dotenv
 import sqlite3
 
 load_dotenv()
-token = os.getenv('TOKEN')
+#token = os.getenv('TOKEN')
+token = '1851632203:AAFZr0DXpfCLQqwiUSDKqNJv2Makr2cutwY'
 conn = sqlite3.connect('sqlite_bot.db')
 cur = conn.cursor()
 
