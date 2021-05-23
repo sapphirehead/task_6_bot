@@ -6,3 +6,4 @@ __pycache__/
 read.me
 .env
 loc_bot.py
+bot.py
