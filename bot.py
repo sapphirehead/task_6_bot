@@ -10,7 +10,7 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 load_dotenv()
 token = os.getenv('TOKEN')
 password = os.getenv('PASSWORD')
-postgres_url = os.getenv('DATABASE_URL', '127.0.0.1')
+postgres_url = os.environ.get('DATABASE_URL', '127.0.0.1')
 
 try:
     conn = psycopg2.connect(user='postgres', password=password,
