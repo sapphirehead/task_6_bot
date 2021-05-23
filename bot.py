@@ -10,12 +10,12 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 load_dotenv()
 token = os.getenv('TOKEN')
 password = os.getenv('PASSWORD')
-postgres_url = os.environ.get('DATABASE_URL', '127.0.0.1')
-#DATABASE_URL = os.environ['DATABASE_URL']
+#DATABASE_URL = os.environ.get('DATABASE_URL', '127.0.0.1')
+DATABASE_URL = os.environ['DATABASE_URL']
 
 try:
     conn = psycopg2.connect(user='postgres', password=password,
-                            host=postgres_url, port=5432)
+                            host=DATABASE_URL, port=5432)
     conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
     # Курсор для выполнения операций с базой данных
     cursor = conn.cursor()
@@ -27,7 +27,7 @@ except (Exception, Error):
 conn = psycopg2.connect(user="postgres",
                         # пароль, который указали при установке PostgreSQL
                         password=password,
-                        host=postgres_url,
+                        host=DATABASE_URL,
                         port="5432",
                         database="postgres_db")
 
