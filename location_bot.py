@@ -16,9 +16,9 @@ try:
     conn.commit()
 except sqlite3.Error:
     pass
-finally:
-    if (conn):
-        conn.close()
+
+cur.close()
+conn.close()
 
 bot = telebot.TeleBot(token)
 START, ADD_NAME, ADD_LOCATION = range(3)
