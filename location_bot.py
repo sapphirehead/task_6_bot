@@ -17,7 +17,7 @@ try:
 except sqlite3.Error:
     pass
 finally:
-    if cur or conn:
+    if conn or cur:
         cur.close()
         conn.close()
 
@@ -48,7 +48,7 @@ def write_title_to_sql(message):
     except sqlite3.Error as err:
         print("Error :", err)
     finally:
-        if cur or conn:
+        if conn or cur:
             cur.close()
             conn.close()
 
@@ -70,7 +70,7 @@ def write_coords_to_sql(user_id, location):
     except sqlite3.Error as err:
         print("Error :", err)
     finally:
-        if cur or conn:
+        if conn or cur:
             cur.close()
             conn.close()
 
@@ -86,7 +86,7 @@ def handle_title(message):
 @bot.message_handler(
     func=lambda message: get_state(message) == ADD_NAME)
 def handle_location(message):
-    if message.text in ('/add', '/list', '/reset'):
+    if message.text in ('/start', '/add', '/list', '/reset'):
         bot.send_message(chat_id=message.chat.id, text='Неверный формат ввода')
         update_state(message, START)
     else:
@@ -130,7 +130,7 @@ def handle_list(message):
         except sqlite3.Error as err:
             print("Error :", err)
         finally:
-            if cur or conn:
+            if conn or cur:
                 cur.close()
                 conn.close()
     else:
@@ -145,7 +145,7 @@ def handle_list(message):
         except sqlite3.Error as err:
             print("Error :", err)
         finally:
-            if cur or conn:
+            if conn or cur:
                 cur.close()
                 conn.close()
 
@@ -177,7 +177,7 @@ def handle_delete(message):
     except sqlite3.Error as err:
         print("Error :", err)
     finally:
-        if cur or conn:
+        if conn or cur:
             cur.close()
             conn.close()
 
