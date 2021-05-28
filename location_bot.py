@@ -37,6 +37,7 @@ def update_state(message, state):
 def write_title_to_sql(message):
     user_id = message.chat.id
     location_title = message.text
+    conn = cur = None
     try:
         conn = sqlite3.connect('sqlite_bot.db')
         cur = conn.cursor()
@@ -46,11 +47,16 @@ def write_title_to_sql(message):
         conn.close()
     except sqlite3.Error as err:
         print("Error :", err)
+    finally:
+        if cur or conn:
+            cur.close()
+            conn.close()
 
 
 def write_coords_to_sql(user_id, location):
     lat, lon = location.latitude, location.longitude
     user_id = str(user_id)
+    conn = cur = None
     try:
         conn = sqlite3.connect('sqlite_bot.db')
         cur = conn.cursor()
@@ -63,6 +69,10 @@ def write_coords_to_sql(user_id, location):
         conn.close()
     except sqlite3.Error as err:
         print("Error :", err)
+    finally:
+        if cur or conn:
+            cur.close()
+            conn.close()
 
 
 @bot.message_handler(
@@ -107,6 +117,7 @@ def handle_confirmation(message):
 )
 def handle_list(message):
     last_locations = None
+    conn = cur = None
     if get_state(message) != START:
         update_state(message, START)
         user_id = str(message.chat.id)
@@ -118,6 +129,10 @@ def handle_list(message):
             conn.close()
         except sqlite3.Error as err:
             print("Error :", err)
+        finally:
+            if cur or conn:
+                cur.close()
+                conn.close()
     else:
         try:
             conn = sqlite3.connect('sqlite_bot.db')
@@ -129,6 +144,11 @@ def handle_list(message):
             conn.close()
         except sqlite3.Error as err:
             print("Error :", err)
+        finally:
+            if cur or conn:
+                cur.close()
+                conn.close()
+
         if last_locations:
             bot.send_message(chat_id=message.chat.id, text='Из последних 10 сохранённых локаций:')
             for location in last_locations:
@@ -146,6 +166,7 @@ def handle_list(message):
 @bot.message_handler(func=lambda x: True, commands=['reset'])
 def handle_delete(message):
     user_id = str(message.chat.id)
+    conn = cur = None
     try:
         conn = sqlite3.connect('sqlite_bot.db')
         cur = conn.cursor()
@@ -155,6 +176,11 @@ def handle_delete(message):
         conn.close()
     except sqlite3.Error as err:
         print("Error :", err)
+    finally:
+        if cur or conn:
+            cur.close()
+            conn.close()
+
     bot.send_message(chat_id=message.chat.id, text='Данные очищены')
 
 
