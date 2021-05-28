@@ -7,18 +7,19 @@ import sqlite3
 
 load_dotenv()
 token = os.getenv('TOKEN')
-conn = sqlite3.connect('sqlite_bot.db')
-cur = conn.cursor()
-
+cur = conn = None
 try:
+    conn = sqlite3.connect('sqlite_bot.db')
+    cur = conn.cursor()
     cur.execute("CREATE TABLE locations (id SERIAL PRIMARY KEY, " +
                 "user_id VARCHAR(64), location VARCHAR(64))")
     conn.commit()
 except sqlite3.Error:
     pass
-
-cur.close()
-conn.close()
+finally:
+    if cur or conn:
+        cur.close()
+        conn.close()
 
 bot = telebot.TeleBot(token)
 START, ADD_NAME, ADD_LOCATION = range(3)
