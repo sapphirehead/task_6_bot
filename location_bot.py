@@ -43,11 +43,9 @@ def write_title_to_sql(message):
         cur.execute("INSERT INTO locations (user_id, location) VALUES('{}', '{}')".format(user_id, location_title))
         conn.commit()
         cur.close()
-    except sqlite3.Error:
-        pass
-    finally:
-        if (conn):
-            conn.close()
+        conn.close()
+    except sqlite3.Error as err:
+        print("Error :", err)
 
 
 def write_coords_to_sql(user_id, location):
@@ -62,11 +60,9 @@ def write_coords_to_sql(user_id, location):
         cur.execute("UPDATE locations SET user_id = '{}', location = '{}' WHERE location = '{}' AND user_id = '{}'".format(user_id, full_location_data, title, user_id))
         conn.commit()
         cur.close()
-    except sqlite3.Error:
-        pass
-    finally:
-        if (conn):
-            conn.close()
+        conn.close()
+    except sqlite3.Error as err:
+        print("Error :", err)
 
 
 @bot.message_handler(
@@ -110,6 +106,7 @@ def handle_confirmation(message):
     func=lambda x: True, commands=['list']
 )
 def handle_list(message):
+    last_locations = None
     if get_state(message) != START:
         update_state(message, START)
         user_id = str(message.chat.id)
@@ -118,11 +115,9 @@ def handle_list(message):
             cur = conn.cursor()
             cur.execute("DELETE FROM locations WHERE user_id = '{}'".format(str(user_id)))
             cur.close()
-        except sqlite3.Error:
-            pass
-        finally:
-            if (conn):
-                conn.close()
+            conn.close()
+        except sqlite3.Error as err:
+            print("Error :", err)
     else:
         try:
             conn = sqlite3.connect('sqlite_bot.db')
@@ -130,11 +125,10 @@ def handle_list(message):
             cur.execute("SELECT location FROM locations ORDER BY id DESC LIMIT 10")
             last_locations = cur.fetchall()
             cur.close()
-        except sqlite3.Error:
-            pass
-        finally:
-            if (conn):
-                conn.close()
+            cur.close()
+            conn.close()
+        except sqlite3.Error as err:
+            print("Error :", err)
         if last_locations:
             bot.send_message(chat_id=message.chat.id, text='Из последних 10 сохранённых локаций:')
             for location in last_locations:
@@ -158,11 +152,9 @@ def handle_delete(message):
         cur.execute("DELETE FROM locations WHERE user_id = '{}'".format(str(user_id)))
         conn.commit()
         cur.close()
-    except sqlite3.Error:
-        pass
-    finally:
-        if (conn):
-            conn.close()
+        conn.close()
+    except sqlite3.Error as err:
+        print("Error :", err)
     bot.send_message(chat_id=message.chat.id, text='Данные очищены')
 
 
